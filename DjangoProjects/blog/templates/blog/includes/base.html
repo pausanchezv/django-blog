@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+
+    <meta charset="UTF-8">
+    <title>Django BLOG</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/css/bootstrap.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/css/styles.css' %}" />
+
+    <script src="{% static 'blog/js/jquery.js' %}"></script>
+    {% if request.get_full_path == '/blog/users/edit/' %}
+        <link rel="stylesheet" type="text/css" href="{% static 'blog/cropper-js/dist/cropper.css' %}" />
+          <script src="{% static 'blog/cropper-js/dist/cropper.js' %}"></script>
+
+    {% endif %}
+
+</head>
+<body>
+
+    <div class="container">
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mt-2">
+            <a class="navbar-brand" href="{% url 'blog:index' %}">Index</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'blog:index' %}">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'blog:logout' %}">Logout</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'blog:userhome' %}">{{ user.username }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'blog:user-update' %}">{{ 'Edit profile' }}</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'blog:register' %}">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'blog:login' %}">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+        </nav>
+
+
+
+
+        <!-- Every block here will always be different to each other -->
+        {% block content %}
+            <h1>Base.html parent content</h1>
+        {% endblock %}
+
+
+    </div>
+</body>
+</html>

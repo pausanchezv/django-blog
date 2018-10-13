@@ -1,0 +1,57 @@
+{% extends "blog/includes/base.html" %}
+{% load static %}
+{% load functiontags %}
+{% block content %}
+
+    <h1 class="mt-5">Articles</h1>
+
+    <div id="articles" class="row mt-4">
+
+            {% for article in articles %}
+
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                      <h3 class="card-header"><a href="{% url 'blog:article' article.id article.title|string_to_url %}">{{ article.title }}</a></h3>
+                      <div class="card-body">
+                        <h5 class="card-title">Author: <strong>{{ article.client.username }}</strong></h5>
+                        <h6 class="card-subtitle text-muted">{{ article.pub_date }}</h6>
+                      </div>
+                        <a href="{% url 'blog:article' article.id article.title|string_to_url %}">
+                            <img style="width: 100%; display: block;" src="{% static '' %}{{ article.image }}" alt="Card image">
+                        </a>
+                      <div class="card-body">
+                        <!--<p class="card-text">{{ article.body|safe|slice:"0:250"|pau:'x' }}...</p>-->
+
+                            {% replace_tag article.body|slice:"0:250" 'a' '?' as clean_article %}
+                            <p class="card-text">{{ clean_article|safe }}...</p>
+
+                      </div>
+
+                      <div class="card-body">
+                          {% for topic in article.topics.all %}
+                                <a href="#" class="card-link">#{{ topic.name }}</a>
+                          {% endfor %}
+                      </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+    </div>
+
+    <button id="view-more" type="button" class="btn btn-primary btn-lg btn-block mt-5">View more</button>
+
+
+    <script>
+        // when document is ready
+        jQuery(document).ready(function() {
+            jQuery.getScript("{% static 'blog/js/index.js' %}").done(function () {
+                Index.init('{{ csrf_token }}', '{% url 'blog:ajax' %}');
+
+            }).fail(function() {
+                alert("Ajax load script has failed!");
+
+            });
+        });
+    </script>
+
+{% endblock %}

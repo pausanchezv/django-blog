@@ -1,0 +1,113 @@
+{% extends "blog/includes/base.html" %}
+{% load static %}
+{% block content %}
+
+    <h1 class="mt-4">Userhome: {{ user.username }} {{ client.image }}</h1>
+
+        <!--<form action="{% url 'blog:create_article' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form }}
+            <input type="submit" value="Submit" />
+
+        </form>-->
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <fieldset>
+                    <legend>Personal</legend>
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" aria-describedby="username" value="{{ user.username }}" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input class="form-control" id="email" name="email" aria-describedby="email" value="{{ user.email }}" readonly />
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-12">
+
+            <form action="{% url 'blog:create_article' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <fieldset>
+                    <legend>Create an article</legend>
+
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" aria-describedby="title" placeholder="Enter a title" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="body">Body</label>
+                        <textarea class="form-control" id="body" name="body" aria-describedby="body" placeholder="Enter the body" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Choose an image</label>
+                        <div class="clear"></div>
+                        <input type="file" name="image" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select the topics related</label>
+                        <div class="clear"></div>
+                        {% for topic in topics %}
+                            <button type="button" class="btn btn-secondary topic-btn" id="topic_{{ topic.id }}">{{ topic }}</button>
+                        {% endfor %}
+                    </div>
+
+
+
+                    <div class="clear"></div>
+                    <input type="hidden" name="article-topics" id="article-topics" value=""/>
+                    <input type="submit" class="btn btn-primary mt-4" value="Create an article" />
+
+                </fieldset>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+
+
+
+        jQuery(document).ready(function () {
+
+            const selected = 'btn-success';
+            const unselected = 'btn-secondary';
+
+            var topics = {};
+
+            jQuery('.topic-btn').click(function () {
+
+                if (jQuery(this).hasClass(unselected)) {
+                    jQuery(this).removeClass(unselected).addClass(selected);
+                    topics[this.id] = true;
+
+                } else {
+                    jQuery(this).removeClass(selected).addClass(unselected);
+                    topics[this.id] = false;
+                }
+
+                jQuery('#article-topics').val(JSON.stringify(topics));
+
+            });
+
+        });
+
+    </script>
+
+{% endblock %}

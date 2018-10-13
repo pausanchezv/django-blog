@@ -1,0 +1,99 @@
+{% extends "blog/includes/base.html" %}
+{% load static %}
+{% load functiontags %}
+{% block content %}
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="center mb-4">
+                <h1 class="mt-4">{{ article.title }}</h1>
+                <h4>Author: <strong>{{ article.client.username }}</strong> <small>({{ article.pub_date }})</small></h4>
+                <img class="mt-4" src="{% static '' %}{{ article.image }}" alt="{{ article.title }}">
+            </div>
+
+        </div>
+
+        <div class="col-10 offset-1">
+            <p>{{ article.body|safe }}</p>
+        </div>
+
+    <div class="col-10 offset-1">
+        <div class="clear"></div>
+          {% for topic in article.topics.all %}
+              <a type="button" class="btn btn-sm btn-secondary topic-btn float-right ml-2" href="#">#{{ topic.name }}</a>
+          {% endfor %}
+    </div>
+
+
+        <div id="comments" class="col-10 offset-1 mt-4">
+            <h1 class="mt-4 mb-4">Comments</h1>
+            {% for comment in comments %}
+                <div class="card text-white bg-primary mb-3">
+                  <div class="card-header">{{ comment.client.user.username }}</div>
+                  <div class="card-body">
+                    <h4 class="card-title">{{ comment.text }}</h4>
+                    <p class="card-text">{{ comment.pub_date }}</p>
+                  </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if user.is_authenticated %}
+            <div class="col-10 offset-1">
+                <h1 class="mt-4 mb-4">Do you wanna comment this article?</h1>
+                <form action="" method="post">
+                    <fieldset>
+                        <legend>Create a comment</legend>
+                        <div class="form-group">
+                            <label for="body">Your comment</label>
+                            <textarea class="form-control" id="comment" name="comment" aria-describedby="comment" placeholder="Enter the comment" required></textarea>
+                        </div>
+                        <div class="clear"></div>
+                        <input id="comment-btn" type="button" class="btn btn-primary mt-4" value="Create a comment" />
+                    </fieldset>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+
+        jQuery(document).ready(function() {
+
+            // setting csrf AJAX
+            $.ajaxSetup({
+                data: {csrfmiddlewaretoken: '{{ csrf_token }}' }
+            });
+
+            jQuery('#comment-btn').click(function() {
+
+                var args = {
+                    action: 'add_comment',
+                    article_id: {{ article.id }},
+                    comment_text: $('#comment').val()
+                };
+
+
+                jQuery.post("{% url 'blog:ajax' %}", args, function(data) {
+
+                    if (data) {
+
+                        jQuery('#comment').val('');
+
+                        // language=DjangoTemplate
+                        var $html = '<div class="card text-white bg-primary mb-3">' +
+                        '                  <div class="card-header">' + data.comment_username + '</div>' +
+                        '                  <div class="card-body">' +
+                        '                    <h4 class="card-title">' + data.comment_text + '</h4>' +
+                        '                    <p class="card-text">' + data.comment_date + '</p>' +
+                        '                  </div>' +
+                        '                </div>';
+
+                        $('#comments').append($html);
+                    }
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
